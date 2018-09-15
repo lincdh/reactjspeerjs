@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import RecordRTC from 'recordrtc';
-import SimplePeer from 'simple-peer';
+//import SimplePeer from 'simple-peer';
+import Peer from 'peerjs';
+import uid from 'uid';
+import $ from 'jquery';
+import { Link } from 'react-router-dom';
 
 const socket = io.connect('http://localhost:3001');
 
@@ -12,6 +16,19 @@ const isChrome = !!window.chrome && !isOpera;
 let chromeMediaSource = 'screen';
 let sourceId;
 let screenCallback;
+
+let xirsysConfig;
+$.ajax ({
+  url: "https://global.xirsys.net/_turn/MyFirstApp/",
+  type: "PUT",
+  async: false,
+  headers: {
+    "Authorization": "Basic " + btoa("jimmydo174:b7914192-b822-11e8-8675-7e29e045fd79")
+  },
+  success: function (res){
+    xirsysConfig = res.v.iceServers;
+  }
+});
 
 const onMessageCallback = (data) => {
   if (data === 'PermissionDeniedError') {
@@ -52,7 +69,7 @@ class ScreenRTC extends Component {
     getScreenConstraints = (cb, captureSourceIdWithAudio) => {
       const firefoxScreenConstraints = {
         mozMediaSource: 'window',
-        mediaSource: 'window'
+        mediaSource: 'window',
       };
 
       if(isFirefox) return cb(null, firefoxScreenConstraints);
@@ -112,9 +129,6 @@ class ScreenRTC extends Component {
     }
     
     componentWillMount() {
-     socket.on('data', function(data) {
-       console.log(data)
-     })
     }
 
     onGetScreen = () => {
@@ -158,31 +172,51 @@ class ScreenRTC extends Component {
               };
 
               // peer streaming
-              const peer = new SimplePeer({ initiator: window.location.hash === '#1', trickle: false, stream: stream });
-              //const peer2 = new SimplePeer({});
-              
-              if (window.location.hash === '#1') {
-                peer.on('signal', function(token) {
-                  const textArea = document.getElementById('text-area');
-                  textArea.value = JSON.stringify(token);
-                  //peer2.signal(token);
-                  socket.emit('offerPeer', token);
-                });
+              const config = { 
+                  host: 'quiet-plateau-63014.herokuapp.com', 
+                  port: 443, secure: true, 
+                  key: 'peerjs', 
+                  config:  { iceServers: xirsysConfig}
+              };
 
-                socket.on('sentAnswerPeer', token => {
-                  peer.signal(token);
-                  console.log(token);
-                })
-  
-                // peer2.on('signal', function(token) {
-                //   peer.signal(token);
+              const peer = Peer('123', config);
+              console.log(peer);
+
+              socket.on('new-connection', peerId => {
+                peer.call(peerId, stream);
+                // the code below cause prolbem when guest page reloading
+                // const conn = peer.connect(peerId);
+                // conn.on('open', () => {
+                //   conn.send('hi!');
                 // });
+              })
+
+              // simple-peer
+              //const peer = new SimplePeer({ initiator: window.location.hash === '#1', trickle: false, stream: stream });
+              ///const peer2 = new SimplePeer({});
+              
+              // if (window.location.hash === '#1') {
+              //   peer.on('signal', function(token) {
+              //     const textArea = document.getElementById('text-area');
+              //     textArea.value = JSON.stringify(token);
+              //     //peer2.signal(token);
+              //     socket.emit('offerPeer', token);
+              //   });
+
+              //   socket.on('sentAnswerPeer', token => {
+              //     peer.signal(token);
+              //     console.log(token);
+              //   })
   
-                peer.on('connect', function () {
-                  console.log('connect');
-                  // wait for 'connect' event before using the data channel
-                  peer.send('hey peer2, how is it going?')
-                })
+              //   // peer2.on('signal', function(token) {
+              //   //   peer.signal(token);
+              //   // });
+  
+              //   peer.on('connect', function () {
+              //     console.log('connect');
+              //     // wait for 'connect' event before using the data channel
+              //     peer.send('hey peer2, how is it going?')
+              //   })
   
                 document.getElementById('stop-screen').addEventListener('click', function() {
                   stream.getTracks().forEach(track => track.stop());
@@ -192,7 +226,7 @@ class ScreenRTC extends Component {
                     console.log('closed');
                   })
                 });
-              }
+              // }
               
           })
           .catch(function(err) {
@@ -208,23 +242,21 @@ class ScreenRTC extends Component {
       video.srcObject = null;
     }
 
-    onSubmitPeer = () => {
-      
+    onGetUid = () => {
+      const id = uid(10);
+      document.getElementById('peer-id').append(id);
+      return id;
     }
     
     render() {
         return (
             <div>
+              <h3 id="peer-id">My peer id: </h3>
               <video controls style={{ display: 'block', margin: '10px auto', maxWidth: '50%'}} autoPlay id="screen-view"></video>
               <video controls style={{ display: 'block', margin: '10px auto', maxWidth: '50%'}} autoPlay id="remote-screen-view"></video>
               <button id="get-screen" onClick={this.onGetScreen} >Get the screen</button>
               <button id="stop-screen" >Stop the screen</button>
-              <br />
-              <textarea id="text-area" style={{ width: '600px', height: '300px'}}></textarea>
-              <br />
-              <input type="text" id="input-peer"></input>
-              <br />
-              <button id="submit">submit</button>
+              <Link to='/guest'><button>Go to guest page</button></Link>
             </div>
         );
     }
