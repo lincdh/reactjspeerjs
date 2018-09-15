@@ -5,7 +5,8 @@ import RecordRTC from 'recordrtc';
 import Peer from 'peerjs';
 import uid from 'uid';
 
-const socket = io.connect('http://localhost:3001');
+//const socket = io.connect('http://localhost:3001');
+const socket = io.connect('https://livebroadcasting.herokuapp.com'); // production
 
 class Guests extends Component {
     constructor(props) {
@@ -15,35 +16,35 @@ class Guests extends Component {
         }
     }
     componentWillMount() {
-        const config = { 
-            host: 'quiet-plateau-63014.herokuapp.com', 
-            port: 443, secure: true, 
-            key: 'peerjs', 
-            config: {
-            'iceServers': [
-                { url: 'stun:stun1.l.google.com:19302' },
-                {
-                    url: 'turn:numb.viagenie.ca',
-                    credential: 'muazkh',
-                    username: 'webrtc@live.com'
-                }
-            ]
-        }};
+        // const config = { 
+        //     host: 'quiet-plateau-63014.herokuapp.com', 
+        //     port: 443, secure: true, 
+        //     key: 'peerjs', 
+        //     config: {
+        //     'iceServers': [
+        //         { url: 'stun:stun1.l.google.com:19302' },
+        //         {
+        //             url: 'turn:numb.viagenie.ca',
+        //             credential: 'muazkh',
+        //             username: 'webrtc@live.com'
+        //         }
+        //     ]
+        // }};
 
-        const peer = Peer('p4567', config);
+        // const peer = Peer('p4567', config);
 
-        socket.emit('new-peer-id', 'p4567');
+        // socket.emit('new-peer-id', 'p4567');
 
-        peer.on('call', function(call) {
-            call.answer();
-            call.on('stream', retmoteStream => {
-                 const video = document.getElementById('video');
-                video.srcObject = retmoteStream;
-                video.onloadedmetadata = function() {
-                    video.play();
-                }
-            });
-        });
+        // peer.on('call', function(call) {
+        //     call.answer();
+        //     call.on('stream', retmoteStream => {
+        //          const video = document.getElementById('video');
+        //         video.srcObject = retmoteStream;
+        //         video.onloadedmetadata = function() {
+        //             video.play();
+        //         }
+        //     });
+        // });
     //     const peer = new SimplePeer({});
     //     peer.on('signal', token => {
     //         socket.emit('answerPeer', token)

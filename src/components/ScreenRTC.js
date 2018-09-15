@@ -7,7 +7,8 @@ import uid from 'uid';
 import $ from 'jquery';
 import { Link } from 'react-router-dom';
 
-const socket = io.connect('http://localhost:3001');
+//const socket = io.connect('http://localhost:3001');
+const socket = io.connect('https://livebroadcasting.herokuapp.com'); // production
 
 const isFirefox = typeof window.InstallTrigger !== 'undefined';
 const isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
