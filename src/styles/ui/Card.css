@@ -1,0 +1,19 @@
+#card-container {
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    background-color: #fff;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+#card-desc {
+    padding: 5px 20px 10px 20px;
+    border-top: 0.05px solid #ccc;
+}
+
+#card-action {
+    padding: 10px 20px;
+    display: flex;
+    justify-content: flex-end;
+    background-color: #cccccc;
+}
