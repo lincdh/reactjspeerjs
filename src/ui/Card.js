@@ -5,10 +5,6 @@ import PlayIcon from '@material-ui/icons/PlayCircleFilled';
 import '../styles/ui/Card.css';
 
 class Card extends Component {
-    constructor (props) {
-        super(props);
-    }
-
     render() {
         return (
             <div id='card-container'>

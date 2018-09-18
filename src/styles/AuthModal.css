@@ -1,0 +1,30 @@
+#auth-modal-container {
+    padding: 20px;
+}
+
+#auth-modal-container>div {
+    margin-bottom: 16px;
+}
+
+#auth-modal-container>button {
+    float: right;
+}
+
+#auth-modal-container>div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#auth-modal-container>div>label {
+    width: 30%;
+}
+
+#auth-modal-container>div>div {
+    width: 65%;
+}
+
+#auth-modal-container>div>div>input {
+    width: 80%;
+}

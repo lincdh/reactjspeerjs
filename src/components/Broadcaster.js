@@ -65,12 +65,31 @@ window.addEventListener('message', function(event) {
   
 });
 
+const Message = ({ message, username }) => (
+  <div>
+    <strong>{username}: </strong>
+    <span>{message}</span>
+  </div>
+);
+
+const MessageList = ({ messages, username }) => (
+  <div id='chat-main'>
+    {
+      messages.map((message, i) => <Message key={i} message={message} username={username} />)
+    }
+  </div>
+  
+);
+
 class Broadcaster extends Component {
     constructor(props) {
       super(props);
       this.state = {
         stream: null,
-        isChatmain: true
+        isChatmain: true,
+        message: '',
+        messages: [],
+        username: 'demo'
       }
     }
 
@@ -137,6 +156,8 @@ class Broadcaster extends Component {
     }
     
     componentWillMount() {
+      socket.emit('broadcaster', 'username');
+      socket.on('username', messages => this.setState({ messages: messages }));
     }
 
     onGetScreen = () => {
@@ -277,7 +298,7 @@ class Broadcaster extends Component {
     renderVideoPlayer = () => {
       return (
         <div id='video-player'>
-          <video controls style={{ display: 'block', margin: '10px auto', width: '100%'}} autoPlay id="screen-view"></video>
+          <video controls style={{ display: 'block', margin: '10px auto', width: '100%', backgroundColor: this.state.stream ? 'none' : '#34495e'}} autoPlay id="screen-view"></video>
           <div>
             <strong style={{ float: 'right' }}>REPORT THIS USER</strong>
           </div>
@@ -304,16 +325,7 @@ class Broadcaster extends Component {
     
     renderChatMain = () => {
       return (
-        <div id='chat-main'>
-          <div className='message'>
-            <strong>username: </strong>
-            <span>message appears here vmessage appears here message appears here message appears here message appears here</span>
-          </div>
-          <div className='message'>
-            <strong>username: </strong>
-            <span>messages appears here vmessage appears here message appears here message appears here message appears here</span>
-          </div>
-        </div>
+        <MessageList messages={this.state.messages} username={this.state.username} />
       );
     }
 
@@ -323,13 +335,24 @@ class Broadcaster extends Component {
           <div id='chat-text-input'>
             <Input placeholder="What do you think?"
                 disableUnderline
+                value={this.state.message}
+                onChange={this.onReplyInputChange}
             />
           </div>
           
-          <Button variant='contained' color='primary' size='small'>Submit</Button>
+          <Button variant='contained' color='primary' size='small' onClick={this.onReplySubmit}>Submit</Button>
         </div>
       );
     }
+
+    onReplySubmit = () => {
+      socket.emit('message', { broadcaster: 'username', message: this.state.message });
+    }
+
+    onReplyInputChange = (event) => {
+      this.setState({ message: event.target.value })
+    }
+
     render() {
         return (
             <div id="broadcaster-container">

@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import logo from '../logo.svg';
 import { Link } from 'react-router-dom';
 import '../styles/Header.css'
-import { Button, Input } from '@material-ui/core';
+import { Button, Input, Dialog   } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
+import AuthModal from './AuthModal';
 
 class Header extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isModalOpen: false
+        }
+    }
+
     renderNavBar = () => {
         return (
             <nav id='nav-wrapper'>
@@ -24,7 +31,7 @@ class Header extends Component {
                     </ul>
                 </div>
                 <div id='right-nav'>
-                    <Button variant='contained' size='small' style={{ marginRight: '5px' }} color='default'>SIGN IN</Button>
+                    <Button variant='contained' size='small' style={{ marginRight: '5px' }} color='default' onClick={this.handleModalOpen}>SIGN IN</Button>
                     <Button variant='contained' size='small' color="primary">JOIN NOW</Button>
                 </div>
             </nav>
@@ -47,12 +54,31 @@ class Header extends Component {
             </div>
         )
     }
+
+    renderModal = () => (
+        <Dialog 
+            aria-labelledby="responsive-dialog-title"
+            open={this.state.isModalOpen}
+            onClose={this.handleModalClose}
+        >
+            <AuthModal />
+        </Dialog>
+    )
+
+    handleModalClose = () => {
+        this.setState({ isModalOpen: false });
+    }
+
+    handleModalOpen = () => {
+        this.setState({ isModalOpen: true });
+    }
+
     render() {
         return (
             <header className="App-header">
                 {this.renderNavBar()}
                 {this.renderActivityBar()}
-                
+                {this.renderModal()}
             </header>
         )
     }

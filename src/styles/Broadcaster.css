@@ -27,6 +27,7 @@
 
 #chat-container {
     flex: 1;
+    max-height: 550px;
 }
 
 span {
